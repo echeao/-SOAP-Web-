@@ -17,7 +17,7 @@ public class SoapConfig {
         if (wsdlUrl == null) {
             // Fallback (though unlikely if built correctly)
             try {
-                wsdlUrl = new URL("http://localhost:8089/ws/user?wsdl");
+                wsdlUrl = new URL("http://localhost:8089/services/user?wsdl");
             } catch (Exception e) {
                 throw new RuntimeException("Cannot locate WSDL", e);
             }

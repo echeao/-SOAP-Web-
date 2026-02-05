@@ -3,48 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOAP Client Demo</title>
+    <title>SOAP Client Interactive</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">SOAP Web Service Client</h4>
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0">✉️ SOAP Message Sender</h4>
+                    <small>Client-Side (Spring Boot Proxy)</small>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form id="userForm">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" required placeholder="Enter name">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="name" class="form-label fw-bold">Name</label>
+                                <input type="text" class="form-control form-control-lg" id="name" required placeholder="Alice">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="age" class="form-label fw-bold">Age</label>
+                                <input type="number" class="form-control form-control-lg" id="age" required placeholder="25">
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="age" class="form-label">Age</label>
-                            <input type="number" class="form-control" id="age" required placeholder="Enter age">
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Send Request to SOAP Server</button>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg mt-4 shadow-sm" id="sendBtn">
+                            Send Request 🚀
+                        </button>
                     </form>
 
-                    <div id="resultArea" class="mt-4 d-none">
-                        <div class="alert alert-success">
-                            <strong>Response from Server:</strong>
-                            <p id="responseMessage" class="mb-0"></p>
-                        </div>
-                    </div>
-
-                    <div id="errorArea" class="mt-4 d-none">
-                        <div class="alert alert-danger">
-                            <strong>Error:</strong>
-                            <p id="errorMessage" class="mb-0"></p>
-                        </div>
+                    <!-- Response Area -->
+                    <div id="responseContainer" class="mt-4">
+                        <!-- Items appended here -->
                     </div>
                 </div>
             </div>
-            <div class="text-center mt-3 text-muted">
-                <small>Frontend (HTML/JS) -> Spring Boot (REST) -> Generated SOAP Client -> SOAP Server</small>
+
+            <div class="text-center mt-4 text-muted">
+                <p>Try sending multiple requests. <br> Watch the <strong>Server Dashboard</strong> (Port 8089) update in real-time!</p>
             </div>
         </div>
     </div>
@@ -54,36 +52,54 @@
     document.getElementById('userForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const name = document.getElementById('name').value;
-        const age = document.getElementById('age').value;
-        const resultArea = document.getElementById('resultArea');
-        const errorArea = document.getElementById('errorArea');
-        const responseMessage = document.getElementById('responseMessage');
-        const errorMessage = document.getElementById('errorMessage');
+        const nameInput = document.getElementById('name');
+        const ageInput = document.getElementById('age');
+        const sendBtn = document.getElementById('sendBtn');
+        const responseContainer = document.getElementById('responseContainer');
 
-        // Reset UI
-        resultArea.classList.add('d-none');
-        errorArea.classList.add('d-none');
+        const name = nameInput.value;
+        const age = parseInt(ageInput.value);
+
+        // UI Feedback
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
 
         try {
+            const startTime = performance.now();
             const response = await fetch('/api/check-user', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name: name, age: parseInt(age) })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name, age })
             });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (!response.ok) throw new Error('Network error');
 
             const data = await response.json();
-            responseMessage.textContent = data.message;
-            resultArea.classList.remove('d-none');
+            const endTime = performance.now();
+            const duration = (endTime - startTime).toFixed(0);
+
+            // Create Result Card
+            const card = document.createElement('div');
+            card.className = "alert alert-success shadow-sm animate__animated animate__fadeInDown mb-3";
+            card.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="alert-heading mb-1">✅ Response Received</h6>
+                    <small class="badge bg-success bg-opacity-75">${duration}ms</small>
+                </div>
+                <hr class="my-2">
+                <p class="mb-0 fw-bold">${data.message}</p>
+            `;
+
+            responseContainer.prepend(card);
+
         } catch (error) {
-            errorMessage.textContent = 'Failed to communicate with the server. ' + error.message;
-            errorArea.classList.remove('d-none');
+            const card = document.createElement('div');
+            card.className = "alert alert-danger shadow-sm animate__animated animate__shakeX mb-3";
+            card.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            responseContainer.prepend(card);
+        } finally {
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = 'Send Request 🚀';
         }
     });
 </script>

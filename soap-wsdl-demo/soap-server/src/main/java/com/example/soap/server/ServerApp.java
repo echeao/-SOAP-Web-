@@ -1,17 +1,13 @@
 package com.example.soap.server;
 
-import com.example.soap.server.service.UserServiceImpl;
-import javax.xml.ws.Endpoint;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class ServerApp {
     public static void main(String[] args) {
-        String address = "http://localhost:8089/ws/user";
-        System.out.println("Starting SOAP Server...");
-        System.out.println("Publishing Service at: " + address);
-
-        Endpoint.publish(address, new UserServiceImpl());
-
-        System.out.println("SOAP Server started successfully!");
-        System.out.println("WSDL available at: " + address + "?wsdl");
+        SpringApplication.run(ServerApp.class, args);
+        System.out.println("SOAP Server (Spring Boot) started on http://localhost:8089");
+        System.out.println("SOAP Endpoint: http://localhost:8089/services/user?wsdl");
     }
 }
