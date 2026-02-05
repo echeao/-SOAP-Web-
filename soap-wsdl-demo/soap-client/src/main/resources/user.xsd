@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI (https://github.com/eclipse-ee4j/metro-jax-ws). RI's version is JAX-WS RI 2.3.5 git-revision#7ddc91f. --><xs:schema xmlns:tns="http://service.server.soap.example.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://service.server.soap.example.com/">
+
+<xs:element name="getUserInfo" type="tns:getUserInfo"></xs:element>
+
+<xs:element name="getUserInfoResponse" type="tns:getUserInfoResponse"></xs:element>
+
+<xs:element name="userResponse" type="tns:UserResponse"></xs:element>
+
+<xs:complexType name="getUserInfo">
+<xs:sequence>
+<xs:element name="userRequest" type="tns:UserRequest" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="UserRequest">
+<xs:sequence>
+<xs:element name="name" type="xs:string"></xs:element>
+<xs:element name="age" type="xs:int"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getUserInfoResponse">
+<xs:sequence>
+<xs:element name="userResponse" type="tns:UserResponse" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="UserResponse">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
