@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userResponse>
+    <status>参数错误</status>
+    <code>400</code>
+    <message>年龄必须在 0-150 之间</message>
+</userResponse>

@@ -2,11 +2,20 @@ package com.example.soapclient.controller;
 
 import com.example.soapclient.generated.UserResponse;
 import com.example.soapclient.service.SoapClientService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 测试控制器 - 提供 REST API 触发 SOAP 调用
@@ -35,6 +44,12 @@ public class TestController {
      * SOAP 客户端服务
      */
     private final SoapClientService soapClientService;
+    
+    /**
+     * XML 输出目录（从配置文件读取）
+     */
+    @Value("${xml.output.directory:../IFXML}")
+    private String xmlOutputDirectory;
     
     /**
      * 构造方法 - 注入依赖
@@ -171,5 +186,77 @@ public class TestController {
         error.put("message", message);
         error.put("hint", "请确保 SOAP Server 已启动在 http://localhost:8089");
         return error;
+    }
+    
+    // ==================== 文件管理接口 ====================
+    
+    /**
+     * 获取已保存的 XML 文件列表
+     * 
+     * 使用方式：
+     *   GET http://localhost:8080/api/test/files
+     * 
+     * @return 文件名列表
+     */
+    @GetMapping("/files")
+    public ResponseEntity<?> listXmlFiles() {
+        try {
+            Path dirPath = Paths.get(xmlOutputDirectory);
+            
+            if (!Files.exists(dirPath)) {
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+            
+            File dir = dirPath.toFile();
+            String[] files = dir.list((d, name) -> name.endsWith(".xml"));
+            
+            if (files == null || files.length == 0) {
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+            
+            // 按时间倒序排列（最新的文件在前）
+            List<String> fileList = Arrays.stream(files)
+                    .sorted(Collections.reverseOrder())
+                    .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(fileList);
+            
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(createErrorResponse("获取文件列表失败: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * 获取指定 XML 文件的内容
+     * 
+     * 使用方式：
+     *   GET http://localhost:8080/api/test/files/{filename}
+     * 
+     * @param filename 文件名
+     * @return 文件内容
+     */
+    @GetMapping("/files/{filename}")
+    public ResponseEntity<?> getXmlFileContent(@PathVariable String filename) {
+        try {
+            // 安全检查：防止路径遍历攻击
+            if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
+                return ResponseEntity.badRequest()
+                        .body("非法的文件名");
+            }
+            
+            Path filePath = Paths.get(xmlOutputDirectory, filename);
+            
+            if (!Files.exists(filePath)) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            String content = new String(Files.readAllBytes(filePath), "UTF-8");
+            return ResponseEntity.ok(content);
+            
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body("读取文件失败: " + e.getMessage());
+        }
     }
 }

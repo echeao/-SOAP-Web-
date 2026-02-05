@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userResponse>
+    <status>SUCCESS</status>
+    <code>201</code>
+    <message>用户创建成功</message>
+    <data>
+        <userId>1003</userId>
+        <name>张三1111</name>
+        <age>25111</age>
+        <greeting>欢迎新用户 张三1111！</greeting>
+        <timestamp>2026-02-05T21:21:09</timestamp>
+    </data>
+</userResponse>
