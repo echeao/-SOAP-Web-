@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    SOAP Client 模块 - POM 配置
+    
+    【教学说明】
+    这是 SOAP 客户端模块的 Maven 配置文件。
+    使用 Spring Boot 作为应用框架，提供 REST API 来触发 SOAP 调用。
+    
+    关键配置：
+    1. Spring Boot 父 POM - 简化依赖管理和打包
+    2. JAX-WS 运行时 - 用于调用 SOAP 服务
+    3. jaxws-maven-plugin - 根据 WSDL 生成客户端代码
+    
+    【代码生成说明】
+    wsimport 插件会读取 WSDL 文件，自动生成：
+    - Service 类（如 UserServiceImplService）
+    - Port 接口（如 UserService）
+    - 请求/响应类（如 UserResponse）
+    - JAXB 绑定类（ObjectFactory 等）
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <!-- Spring Boot 父 POM -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.18</version>
+        <relativePath/>
+    </parent>
+    
+    <groupId>com.example</groupId>
+    <artifactId>soap-client</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    
+    <name>SOAP Client</name>
+    <description>SOAP Web Service 客户端 - 调用用户服务并保存响应</description>
+    
+    <properties>
+        <java.version>1.8</java.version>
+        <jaxws.version>2.3.5</jaxws.version>
+    </properties>
+    
+    <dependencies>
+        <!-- 
+            【教学说明】Spring Boot Web Starter
+            提供 REST API 支持，用于暴露测试接口。
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <!-- 
+            【教学说明】JAX-WS API
+            客户端调用 SOAP 服务所需的 API。
+        -->
+        <dependency>
+            <groupId>jakarta.xml.ws</groupId>
+            <artifactId>jakarta.xml.ws-api</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        
+        <!-- 
+            【教学说明】JAX-WS 运行时
+            提供 SOAP 消息的构造、发送和解析功能。
+        -->
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>${jaxws.version}</version>
+        </dependency>
+        
+        <!-- 
+            【教学说明】JAXB API 和运行时
+            用于 XML 与 Java 对象的转换。
+        -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        
+        <!-- 测试依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <!-- Spring Boot Maven 插件 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            
+            <!-- 
+                【教学说明】JAX-WS Maven 插件 - wsimport
+                
+                这个插件负责根据 WSDL 文件生成 Java 客户端代码。
+                
+                工作原理：
+                1. 读取指定的 WSDL 文件
+                2. 解析服务定义、消息格式
+                3. 生成对应的 Java 类
+                
+                配置说明：
+                - wsdlDirectory: WSDL 文件所在目录
+                - wsdlFiles: 要处理的 WSDL 文件列表
+                - packageName: 生成代码的包名
+                - sourceDestDir: 生成代码的输出目录
+                - vmArgs: JVM 参数，解决 HTTPS 等问题
+            -->
+            <plugin>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>2.3.5</version>
+                <executions>
+                    <execution>
+                        <id>wsimport-from-wsdl</id>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <!-- WSDL 文件目录 -->
+                            <wsdlDirectory>${project.basedir}/src/main/resources/wsdl</wsdlDirectory>
+                            <!-- WSDL 文件列表 -->
+                            <wsdlFiles>
+                                <wsdlFile>user-service.wsdl</wsdlFile>
+                            </wsdlFiles>
+                            <!-- 生成的包名 -->
+                            <packageName>com.example.soapclient.generated</packageName>
+                            <!-- 输出目录 -->
+                            <sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
+                            <!-- 生成时保留注释 -->
+                            <extension>true</extension>
+                            <!-- 开启详细输出 -->
+                            <verbose>true</verbose>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- 将生成的代码添加到源码路径 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>add-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/wsimport</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

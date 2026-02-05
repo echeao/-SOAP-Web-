@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    WSDL/SOAP Java 学习实践项目 - 父 POM
+    
+    【教学说明】
+    这是一个 Maven 多模块项目的父 POM 文件。
+    它定义了所有子模块共享的配置，如 Java 版本、编码等。
+    子模块（soap-server 和 soap-client）会继承这些配置。
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <!-- 项目坐标 -->
+    <groupId>com.example</groupId>
+    <artifactId>soap-wsdl-demo</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    
+    <name>SOAP WSDL Demo - Parent</name>
+    <description>WSDL/SOAP Java 学习实践项目 - 包含 Server 和 Client 两个模块</description>
+    
+    <!-- 
+        【教学说明】模块聚合
+        通过 <modules> 标签将多个子项目聚合在一起。
+        执行 mvn install 时会按依赖顺序构建所有模块。
+    -->
+    <modules>
+        <module>soap-server</module>
+        <module>soap-client</module>
+    </modules>
+    
+    <!-- 
+        【教学说明】属性定义
+        在父 POM 中定义公共属性，子模块可以通过 ${属性名} 引用。
+        这样可以统一管理版本号，避免重复配置。
+    -->
+    <properties>
+        <!-- 基础配置 -->
+        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        
+        <!-- JAX-WS 相关版本 -->
+        <jaxws.version>2.3.5</jaxws.version>
+        <jaxb.version>2.3.1</jaxb.version>
+        <jakarta.xml.ws.version>2.3.3</jakarta.xml.ws.version>
+        <jakarta.xml.bind.version>2.3.3</jakarta.xml.bind.version>
+    </properties>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- 
+                    【教学说明】Maven 编译器插件
+                    使用较新版本以支持 Java 21
+                -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.11.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    
+    <!-- 
+        【教学说明】依赖管理
+        在 <dependencyManagement> 中定义依赖版本，
+        子模块引用时无需再指定版本号，确保版本一致性。
+    -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- JAX-WS API -->
+            <dependency>
+                <groupId>jakarta.xml.ws</groupId>
+                <artifactId>jakarta.xml.ws-api</artifactId>
+                <version>${jakarta.xml.ws.version}</version>
+            </dependency>
+            
+            <!-- JAX-WS 运行时实现 -->
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-rt</artifactId>
+                <version>${jaxws.version}</version>
+            </dependency>
+            
+            <!-- JAXB API (Java 11+ 需要显式添加) -->
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jakarta.xml.bind.version}</version>
+            </dependency>
+            
+            <!-- JAXB 运行时实现 -->
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+</project>

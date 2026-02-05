@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    User Service WSDL - 预置的服务描述文件
+    
+    【教学说明】
+    这是从 SOAP Server 生成的 WSDL 文件预置副本。
+    
+    为什么需要预置 WSDL？
+    当使用 wsimport 生成客户端代码时，通常需要访问服务端的 WSDL。
+    但在首次构建时，服务端可能还未启动（"鸡生蛋"问题）。
+    
+    通过预置 WSDL 文件，客户端可以独立编译，无需依赖运行中的服务。
+    
+    注意：如果服务端的接口发生变化，需要更新此文件。
+-->
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" 
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+             xmlns:tns="http://example.com/soap/user" 
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+             name="UserServiceImplService" 
+             targetNamespace="http://example.com/soap/user">
+    
+    <!-- 
+        【教学说明】Types 部分
+        定义消息中使用的数据类型。
+        这里使用 XML Schema (XSD) 来定义复杂类型。
+    -->
+    <types>
+        <xsd:schema xmlns:tns="http://example.com/soap/user" 
+                    targetNamespace="http://example.com/soap/user">
+            
+            <!-- getUserInfo 请求 -->
+            <xsd:element name="getUserInfo">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+                        <xsd:element name="age" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- getUserInfo 响应 -->
+            <xsd:element name="getUserInfoResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="result" type="tns:userResponse" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- createUser 请求 -->
+            <xsd:element name="createUser">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+                        <xsd:element name="age" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- createUser 响应 -->
+            <xsd:element name="createUserResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="result" type="tns:userResponse" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- healthCheck 请求 -->
+            <xsd:element name="healthCheck">
+                <xsd:complexType>
+                    <xsd:sequence/>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- healthCheck 响应 -->
+            <xsd:element name="healthCheckResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="result" type="tns:userResponse" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- 
+                【教学说明】复杂类型定义
+                userResponse 包含响应的所有字段。
+                这对应服务端的 UserResponse Java 类。
+            -->
+            <xsd:complexType name="userResponse">
+                <xsd:sequence>
+                    <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="code" type="xsd:int"/>
+                    <xsd:element name="message" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="data" type="tns:userData" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            
+            <!-- 用户数据类型 -->
+            <xsd:complexType name="userData">
+                <xsd:sequence>
+                    <xsd:element name="userId" type="xsd:long" minOccurs="0"/>
+                    <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="age" type="xsd:int"/>
+                    <xsd:element name="greeting" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="timestamp" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            
+        </xsd:schema>
+    </types>
+    
+    <!-- 
+        【教学说明】Message 部分
+        定义服务操作使用的消息。
+        每个操作通常有请求消息和响应消息。
+    -->
+    <message name="getUserInfo">
+        <part element="tns:getUserInfo" name="parameters"/>
+    </message>
+    <message name="getUserInfoResponse">
+        <part element="tns:getUserInfoResponse" name="parameters"/>
+    </message>
+    <message name="createUser">
+        <part element="tns:createUser" name="parameters"/>
+    </message>
+    <message name="createUserResponse">
+        <part element="tns:createUserResponse" name="parameters"/>
+    </message>
+    <message name="healthCheck">
+        <part element="tns:healthCheck" name="parameters"/>
+    </message>
+    <message name="healthCheckResponse">
+        <part element="tns:healthCheckResponse" name="parameters"/>
+    </message>
+    
+    <!-- 
+        【教学说明】PortType 部分
+        定义服务提供的操作集合。
+        类似于 Java 中的接口定义。
+    -->
+    <portType name="UserService">
+        <operation name="getUserInfo">
+            <input message="tns:getUserInfo"/>
+            <output message="tns:getUserInfoResponse"/>
+        </operation>
+        <operation name="createUser">
+            <input message="tns:createUser"/>
+            <output message="tns:createUserResponse"/>
+        </operation>
+        <operation name="healthCheck">
+            <input message="tns:healthCheck"/>
+            <output message="tns:healthCheckResponse"/>
+        </operation>
+    </portType>
+    
+    <!-- 
+        【教学说明】Binding 部分
+        定义消息格式和协议细节。
+        - style="document": 使用文档风格（推荐）
+        - transport: 使用 HTTP 作为传输协议
+    -->
+    <binding name="UserServiceImplPortBinding" type="tns:UserService">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="getUserInfo">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="createUser">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="healthCheck">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    
+    <!-- 
+        【教学说明】Service 部分
+        定义服务的具体访问地址。
+        客户端根据这个地址发送 SOAP 请求。
+    -->
+    <service name="UserServiceImplService">
+        <port binding="tns:UserServiceImplPortBinding" name="UserServiceImplPort">
+            <soap:address location="http://localhost:8089/ws/user"/>
+        </port>
+    </service>
+    
+</definitions>
