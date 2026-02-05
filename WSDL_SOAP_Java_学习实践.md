@@ -20,7 +20,7 @@
 
 目标流程：
 
-> 发送端向接收端发送 **姓名（name）与年龄（age）**等等内容，具有可扩展性  
+> 发送端向接收端发送 **姓名（name）与年龄（age）**  
 > 接收端处理后返回 **XML 格式响应**
 
 ---
@@ -30,35 +30,20 @@
 ### 1. 技术栈
 
 - 纯 Java 应用
-- 使用 **JAX-WS（javax.jws / javax.xml.ws）**
-- 不使用 Spring / Spring Boot
-- Maven 构建
 - Java 8+
 
 ### 2. 运行要求
 
 - 服务端口：**8089**
-- 使用 `Endpoint.publish` 启动
-- 自动生成并暴露 WSDL
 
 ### 3. 功能要求
 
 - 提供 SOAP Web Service
 - 接收参数：
-  - `name`（String）
-  - `age`（int）
-- 返回 XML 响应，例如：
-
-```xml
-<userResponse>
-  <message>Tom，30岁，信息接收成功</message>
-</userResponse>
-```
+- 返回 XML 响应
 
 ### 4. 代码要求
 
-- 使用 `@WebService`、`@WebMethod`
-- 请求 / 响应使用 POJO（JAXB）
 - 提供：
   - Service 接口
   - 实现类
@@ -81,24 +66,20 @@
 
 - 应用端口：**8080**
 - 作为 SOAP 客户端
-- 不对外提供 SOAP 服务
 
 ### 3. 功能要求
 
 - 根据接收端 WSDL 生成客户端代码
 - 构造并发送：
-  - name
-  - age
+
 - 接收 SOAP 响应并输出到控制台
 
 ### 4. 实现方式要求
 
-- 使用 `wsimport`（或等效方式）生成：
+- 生成：
   - Service
   - Port
   - Request / Response 类
-- 在 Spring Boot 中：
-  - 使用 `CommandLineRunner` 或简单 REST 接口触发调用
 - 不手写 XML，使用 JAXB 自动序列化
 
 ---
@@ -118,7 +99,6 @@ soap-wsdl-demo/
 
 每个模块需：
 
-- 独立 Maven 构建
 - 可直接运行
 - 包结构清晰、偏教学
 
