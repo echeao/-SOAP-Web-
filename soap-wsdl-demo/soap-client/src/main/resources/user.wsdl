@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://service.server.soap.example.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="UserService" targetNamespace="http://service.server.soap.example.com/">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://service.server.soap.example.com/" elementFormDefault="unqualified" targetNamespace="http://service.server.soap.example.com/" version="1.0">
+
+  <xs:element name="getUserInfo" type="tns:getUserInfo"/>
+
+  <xs:element name="getUserInfoResponse" type="tns:getUserInfoResponse"/>
+
+  <xs:element name="userResponse" type="tns:UserResponse"/>
+
+  <xs:complexType name="getUserInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="userRequest" type="tns:UserRequest"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="UserRequest">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="age" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getUserInfoResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="userResponse" type="tns:UserResponse"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="UserResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="message" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="getUserInfoResponse">
+    <wsdl:part element="tns:getUserInfoResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getUserInfo">
+    <wsdl:part element="tns:getUserInfo" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="UserService">
+    <wsdl:operation name="getUserInfo">
+      <wsdl:input message="tns:getUserInfo" name="getUserInfo">
+    </wsdl:input>
+      <wsdl:output message="tns:getUserInfoResponse" name="getUserInfoResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="UserServiceSoapBinding" type="tns:UserService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getUserInfo">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getUserInfo">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getUserInfoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="UserService">
+    <wsdl:port binding="tns:UserServiceSoapBinding" name="UserServicePort">
+      <soap:address location="http://localhost:8089/services/user"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
